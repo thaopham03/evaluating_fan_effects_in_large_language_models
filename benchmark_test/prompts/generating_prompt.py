@@ -59,9 +59,9 @@ def process_data(file_path):
     data = []
 
     for i in range(len(questions)):
-        base_prompt = questions[i] + choices[0][i] + choices[1][i] + choices[2][i] + choices[3][i]
+        base_prompt = str(questions[i]) + str(choices[0][i]) + str(choices[1][i]) + str(choices[2][i]) + str(choices[3][i])
         for idx, query in enumerate(queries):
-            prompt = base_prompt + query
+            prompt = base_prompt + str(query)
             stimulus = 'best'
             data.append([prompt, stimulus])
 
