@@ -56,14 +56,20 @@ def process_data(file_path):
     questions = generate_question(file_path)
     choices = generate_choices(file_path)
     queries = generate_query()
+    read_file = pd.read_csv(file_path, header=None)
+    correct_answers = read_file[5].tolist()
     data = []
 
     for i in range(len(questions)):
-        base_prompt = str(questions[i]) + str(choices[0][i]) + str(choices[1][i]) + str(choices[2][i]) + str(choices[3][i])
+        base_prompt = questions[i] + choices[0][i] + choices[1][i] + choices[2][i] + choices[3][i]
         for idx, query in enumerate(queries):
-            prompt = base_prompt + str(query)
+            prompt = base_prompt + query
             stimulus = 'best'
-            data.append([prompt, stimulus])
+            correct_choice = correct_answers[i]
+            Is_correct = 1 if query.startswith(f"Of the answer choices above, answer ({correct_choice})") else 0
+            filename = os.path.splitext(os.path.basename(file_path))[0]
+            category = filename.replace('_test', '')
+            data.append([prompt, stimulus, Is_correct, category])
 
     # Extract filename without extension
     filename = os.path.splitext(os.path.basename(file_path))[0]
@@ -72,7 +78,7 @@ def process_data(file_path):
     output_file_path = os.path.join('C:/Users/phamt2/evaluating_fan_effects_in_large_language_models/benchmark_test/prompts/', filename + '_prompts.csv')
     
     # Write processed data to CSV
-    output_df = pd.DataFrame(data, columns=['preamble', 'stimulus'])
+    output_df = pd.DataFrame(data, columns=['preamble', 'stimulus', 'Is_correct', 'Category'])
     output_df.to_csv(output_file_path, index=False)
 
 def main():
