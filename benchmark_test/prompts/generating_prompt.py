@@ -9,6 +9,7 @@ Last update: 06-02-2024
 import numpy as np
 import pandas as pd
 import os 
+import csv
 
 def generate_instruction():
     pass
@@ -28,13 +29,13 @@ def generate_choices(file_path):
     read_file = pd.read_csv(file_path, header=None)
 
     for a in read_file[1]:
-        choice_setA.append("(A) " + a + ",")
+        choice_setA.append("(A) " + a + ", ")
     for b in read_file[2]:
-        choice_setB.append("(B) " + b + ",")
+        choice_setB.append("(B) " + b + ", ")
     for c in read_file[3]:
-        choice_setC.append("(C) " + c + ",")
+        choice_setC.append("(C) " + c + ", ")
     for d in read_file[4]:
-        choice_setD.append("(D) " + d + ".")
+        choice_setD.append("and " + "(D) " + d + ". ")
 
     choices.append(choice_setA)
     choices.append(choice_setB)
@@ -58,16 +59,21 @@ def main():
     queries = generate_query()
     data = []
 
+    # base_prompt = questions[0] + choices[0][0] + choices[1][0] + choices[2][0] + choices[3][0]
+
+    # print(base_prompt)
+
     for i in range(len(questions)):
-        base_prompt = f"{questions[i]} {choices[0][i]} {choices[1][i]} {choices[2][i]} {choices[3][i]}"
+        base_prompt = questions[i] + choices[0][i] + choices[1][i] + choices[2][i] + choices[3][i]
         for idx, query in enumerate(queries):
-            prompt = f"{base_prompt} {query}"
+            prompt = base_prompt + query
             stimulus = 'best'
+            prompt = prompt.replace('"', '')
             data.append([prompt, stimulus])
     
     output_df = pd.DataFrame(data, columns=['preamble', 'stimulus'])
     output_file_path = os.path.join(os.path.dirname('C:/Users/phamt2/evaluating_fan_effects_in_large_language_models/benchmark_test/prompts/'), 'output_prompts.csv')
-    output_df.to_csv(output_file_path, index=False)
+    output_df.to_csv(output_file_path, index=False, quoting=csv.QUOTE_MINIMAL)
     
 if __name__ == "__main__":
     main()
