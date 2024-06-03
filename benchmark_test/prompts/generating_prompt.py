@@ -15,8 +15,8 @@ def generate_instruction():
     pass
 
 def generate_question(file_path):
-    read_file = pd.read_csv(file_path, header=None)
-    read_question = read_file[0]
+    read_file = pd.read_csv(file_path, header=None, quotechar='"')
+    read_question = read_file[0].str.strip('"')
     questions = read_question.tolist()
     return questions
 
@@ -29,13 +29,13 @@ def generate_choices(file_path):
     read_file = pd.read_csv(file_path, header=None)
 
     for a in read_file[1]:
-        choice_setA.append("(A) " + a + ", ")
+        choice_setA.append(" (A) " + str(a))
     for b in read_file[2]:
-        choice_setB.append("(B) " + b + ", ")
+        choice_setB.append("(B) " + str(b))
     for c in read_file[3]:
-        choice_setC.append("(C) " + c + ", ")
+        choice_setC.append("(C) " + str(c))
     for d in read_file[4]:
-        choice_setD.append("and " + "(D) " + d + ". ")
+        choice_setD.append("and " + "(D) " + str(d) + ". ")
 
     choices.append(choice_setA)
     choices.append(choice_setB)
@@ -51,29 +51,36 @@ def generate_query():
     queries = [queryA, queryB, queryC, queryD]
     return queries
 
-def main():
-    loc = 'C:/Users/phamt2/evaluating_fan_effects_in_large_language_models/benchmark_test/data/test/'
-    file_path = os.path.join(loc,'professional_medicine_test.csv')
+def process_data(file_path):
+    # Process each file using the existing logic
     questions = generate_question(file_path)
     choices = generate_choices(file_path)
     queries = generate_query()
     data = []
-
-    # base_prompt = questions[0] + choices[0][0] + choices[1][0] + choices[2][0] + choices[3][0]
-
-    # print(base_prompt)
 
     for i in range(len(questions)):
         base_prompt = questions[i] + choices[0][i] + choices[1][i] + choices[2][i] + choices[3][i]
         for idx, query in enumerate(queries):
             prompt = base_prompt + query
             stimulus = 'best'
-            prompt = prompt.replace('"', '')
             data.append([prompt, stimulus])
+
+    # Extract filename without extension
+    filename = os.path.splitext(os.path.basename(file_path))[0]
     
+    # Output file path based on the input file name
+    output_file_path = os.path.join('C:/Users/phamt2/evaluating_fan_effects_in_large_language_models/benchmark_test/prompts/', filename + '_prompts.csv')
+    
+    # Write processed data to CSV
     output_df = pd.DataFrame(data, columns=['preamble', 'stimulus'])
-    output_file_path = os.path.join(os.path.dirname('C:/Users/phamt2/evaluating_fan_effects_in_large_language_models/benchmark_test/prompts/'), 'output_prompts.csv')
-    output_df.to_csv(output_file_path, index=False, quoting=csv.QUOTE_MINIMAL)
+    output_df.to_csv(output_file_path, index=False)
+
+def main():
+    loc = 'C:/Users/phamt2/evaluating_fan_effects_in_large_language_models/benchmark_test/data/test/'
+    for file_name in os.listdir(loc):
+        if file_name.endswith('.csv'):
+            file_path = os.path.join(loc, file_name)
+            process_data(file_path)
     
 if __name__ == "__main__":
     main()
