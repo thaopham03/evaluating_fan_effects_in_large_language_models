@@ -31,11 +31,11 @@ def generate_choices(file_path):
     for a in read_file[1]:
         choice_setA.append(" (A) " + str(a))
     for b in read_file[2]:
-        choice_setB.append("(B) " + str(b))
+        choice_setB.append(" (B) " + str(b))
     for c in read_file[3]:
-        choice_setC.append("(C) " + str(c))
+        choice_setC.append(" (C) " + str(c))
     for d in read_file[4]:
-        choice_setD.append("and " + "(D) " + str(d) + ". ")
+        choice_setD.append(" and " + "(D) " + str(d) + ". ")
 
     choices.append(choice_setA)
     choices.append(choice_setB)
