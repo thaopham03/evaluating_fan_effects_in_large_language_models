@@ -62,6 +62,7 @@ def process_data(file_path):
 
     for i in range(len(questions)):
         base_prompt = questions[i] + choices[0][i] + choices[1][i] + choices[2][i] + choices[3][i]
+        base_prompt = base_prompt.replace('\n',' ')
         for idx, query in enumerate(queries):
             prompt = base_prompt + query
             stimulus = 'best'
@@ -72,17 +73,21 @@ def process_data(file_path):
             data.append([prompt, stimulus, Is_correct, category])
 
     # Extract filename without extension
-    filename = os.path.splitext(os.path.basename(file_path))[0]
+    exp_dir = os.path.join('./experiments/', category)
     
+    os.makedirs(exp_dir, exist_ok=True)
+
     # Output file path based on the input file name
-    output_file_path = os.path.join('C:/Users/phamt2/evaluating_fan_effects_in_large_language_models/benchmark_test/prompts/', filename + '_prompts.csv')
+    output_file_path = os.path.join(exp_dir + '/prompts.csv')
     
     # Write processed data to CSV
-    output_df = pd.DataFrame(data, columns=['preamble', 'stimulus', 'Is_correct', 'Category'])
+    output_df = pd.DataFrame(data, columns=['preamble', 'stimulus', 'is_correct', 'subject'])
     output_df.to_csv(output_file_path, index=False)
+    # print('Data saved to: ' + output_file_path)
+    print(category)
 
 def main():
-    loc = 'C:/Users/phamt2/evaluating_fan_effects_in_large_language_models/benchmark_test/data/test/'
+    loc = './data/test/'
     for file_name in os.listdir(loc):
         if file_name.endswith('.csv'):
             file_path = os.path.join(loc, file_name)
