@@ -46,7 +46,7 @@ def generate_prompts(members, random_member_typical, random_member_atypical, loc
         else:
             true_category = 'absent'
         
-        data.append([preamble, 'present.', true_category, member, rank_present, category])
+        data.append([preamble, 'present', true_category, member, rank_present, category])
         rank_present += 1
 
     # Then handle the 'absent' stimulus
@@ -59,7 +59,7 @@ def generate_prompts(members, random_member_typical, random_member_atypical, loc
         else:
             true_category = 'absent'
         
-        data.append([preamble, 'absent.', true_category, member, rank_absent, category])
+        data.append([preamble, 'absent', true_category, member, rank_absent, category])
         rank_absent += 1
 
     return data
